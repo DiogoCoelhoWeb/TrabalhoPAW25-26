@@ -1,13 +1,27 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const apiRouter = require('./routes/api');
 
-var app = express();
+const app = express();
+app.use(cors());
+
+require('dotenv').config()
+
+//Database Connection
+mongoose.connect(process.env.MONGODB_URI).then(() => {
+  app.locals.db = mongoose.connection;
+  console.log('Connected to MongoDB [' + mongoose.connection.name + ']');
+}).catch(err => {
+  console.error('MongoDB connection error:', err);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +35,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+app.get('/api', (req, res) => {
+  res.redirect('/api/v1');
+});
+app.use('/api/v1', apiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

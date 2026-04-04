@@ -3,7 +3,9 @@ const { default: mongoose } = require("mongoose");
 const RoleSchema = new mongoose.Schema({
   _id: { type: String, required: true },
   name: { type: String, required: true },
-  default: { type: Boolean, required: false }
+  default: { type: Boolean, required: false },
+  admin: { type: Boolean, required: false },
+  locked: { type: Boolean, required: false }
 },
 {
   collection: "Roles",

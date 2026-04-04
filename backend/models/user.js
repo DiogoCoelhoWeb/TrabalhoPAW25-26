@@ -3,9 +3,9 @@ const { default: mongoose } = require("mongoose");
 const UserSchema = new mongoose.Schema({
   _id: { type: String, required: true }, // Using email as the unique identifier
   name: { type: String, required: true },
-  hashed_password: { type: String, required: true, select: false },
-  roles: [{ type: String, ref: 'Role' }],
-  profile_picture: { type: String, default: null },
+  password: { type: String, required: true },
+  roles: [{ type: String, ref: 'Roles' }],
+  profile_picture: { type: String, default: "default.jpg" },
   address: { type: String, default: null },
   phone_number: { type: String, default: null },
   createdAt: { type: Date, default: Date.now }
@@ -16,5 +16,9 @@ const UserSchema = new mongoose.Schema({
   _id: false
 }
 );
+
+UserSchema.pre(/^find/, async function() {
+  this.populate("roles");
+});
 
 module.exports = mongoose.model("Users", UserSchema);
